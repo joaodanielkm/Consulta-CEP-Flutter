@@ -1,9 +1,6 @@
-import 'package:consulta_cep/app/data/repositories/cep_repository.dart';
-import 'package:consulta_cep/app/pages/cubits/cep_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../data/http/http_client.dart';
+import 'package:consulta_cep/app/pages/cubits/cep_cubit.dart';
 
 class ConsultaCep extends StatelessWidget {
   const ConsultaCep({super.key});
@@ -11,38 +8,47 @@ class ConsultaCep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextEditingController nameController = TextEditingController();
-    final CepRepository cepRepository = CepRepository(
-      client: HttpClient(),
-    );
     return Center(
       child: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.only(top: 150),
-          child: Row(
+          padding: const EdgeInsets.only(top: 100, left: 50, right: 50),
+          child: Column(
             children: [
-              Expanded(
-                child: TextFormField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    hintText: 'Digite o CEP para pesquisa',
-                    contentPadding: EdgeInsets.all(10),
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(8)),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.black.withOpacity(.2),
+                                offset: const Offset(5, 8),
+                                blurRadius: 4)
+                          ]),
+                      child: SizedBox(
+                        width: 600,
+                        child: TextFormField(
+                          controller: nameController,
+                          decoration: const InputDecoration(
+                            label: Text("Digite o CEP para pesquisa"),
+                            border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8))),
+                            contentPadding: EdgeInsets.all(10),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
+              const SizedBox(height: 40),
               GestureDetector(
                 onTap: () {
                   context.read<CepCubit>().obtenhaCep(nameController.text);
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => BlocProvider(
-                        create: (context) => CepCubit(
-                          cepRepository: cepRepository,
-                        ),
-                        child: RetornoCep(cepInformado: nameController.text),
-                      ),
-                    ),
-                  );
-                  //nameController.clear();
                 },
                 child: const CircleAvatar(
                   backgroundColor: Colors.white,
@@ -53,51 +59,155 @@ class ConsultaCep extends StatelessWidget {
                     ),
                   ),
                 ),
-              )
+              ),
+              const SizedBox(height: 40),
+              BlocBuilder<CepCubit, CepState>(
+                builder: (context, state) {
+                  if (state is CepLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (state is CepLoaded) {
+                    return Center(
+                        child: Column(
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            children: <TextSpan>[
+                              const TextSpan(
+                                text: 'Estado: ',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              TextSpan(
+                                text: state.cep.uf,
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            children: <TextSpan>[
+                              const TextSpan(
+                                text: 'Cidade: ',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              TextSpan(
+                                text: state.cep.localidade,
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            children: <TextSpan>[
+                              const TextSpan(
+                                text: 'Setor/Bairro: ',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              TextSpan(
+                                text: state.cep.bairro,
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            children: <TextSpan>[
+                              const TextSpan(
+                                text: 'Logradouro: ',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              TextSpan(
+                                text: state.cep.logradouro,
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            children: <TextSpan>[
+                              const TextSpan(
+                                text: 'Código IBGE: ',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              TextSpan(
+                                text: state.cep.ibge,
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            children: <TextSpan>[
+                              const TextSpan(
+                                text: 'DDD: ',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              TextSpan(
+                                text: state.cep.ddd,
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            children: <TextSpan>[
+                              const TextSpan(
+                                text: 'CEP: ',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              TextSpan(
+                                text: state.cep.cep,
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ));
+                  } else {
+                    return const Center(
+                      child: Text("Digite um cep para pesquisar!"),
+                    );
+                  }
+                },
+              ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class RetornoCep extends StatefulWidget {
-  final String cepInformado;
-
-  const RetornoCep({Key? key, required this.cepInformado}) : super(key: key);
-
-  @override
-  State<RetornoCep> createState() => _RetornoCepState();
-}
-
-class _RetornoCepState extends State<RetornoCep> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<CepCubit>().obtenhaCep(widget.cepInformado);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            BlocBuilder<CepCubit, CepState>(builder: (context, state) {
-              if (state is CepLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else if (state is CepLoaded) {
-                return Center(child: Text(state.cep.bairro));
-              } else {
-                return const Center(
-                  child: Text("Erro ao carregar o CEP"),
-                );
-              }
-            })
-          ],
         ),
       ),
     );
