@@ -40,12 +40,15 @@ class CepCubit extends Cubit<CepState> {
   CepCubit({required this.cepRepository}) : super(CepInitial());
 
   Future<void> obtenhaCep(String cepInformado) async {
+    if (cepInformado.isEmpty || cepInformado.length < 9) {
+      return emit(CepError('CEP inválido!'));
+    }
     try {
       emit(CepLoading());
       final Cep cep = await cepRepository.getCep(cepInformado);
       emit(CepLoaded(cep));
     } catch (e) {
-      emit(CepError('Erro inesperado ao carregar informações do CEP.'));
+      emit(CepError('CEP não encontrado!'));
     }
   }
 }

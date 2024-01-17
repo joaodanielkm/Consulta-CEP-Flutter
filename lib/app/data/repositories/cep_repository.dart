@@ -23,7 +23,7 @@ class CepRepository implements ICepRepository {
     } else if (response.statusCode == 404) {
       throw Exception('Url não é válida');
     } else {
-      throw Exception('Não foi possivel carregar as informações de Cetus.');
+      throw Exception('Não foi possivel carregar o CEP.');
     }
   }
 }

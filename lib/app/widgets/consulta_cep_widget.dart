@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:consulta_cep/app/pages/cubits/cep_cubit.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class ConsultaCep extends StatelessWidget {
   const ConsultaCep({super.key});
 
   @override
   Widget build(BuildContext context) {
+    var maskFormatter = MaskTextInputFormatter(
+        mask: '#####-###', filter: {"#": RegExp(r'[0-9]')});
+
     TextEditingController nameController = TextEditingController();
     return Center(
       child: Scaffold(
@@ -32,33 +36,31 @@ class ConsultaCep extends StatelessWidget {
                         width: 600,
                         child: TextFormField(
                           controller: nameController,
+                          inputFormatters: [maskFormatter],
                           decoration: const InputDecoration(
-                            label: Text("Digite o CEP para pesquisa"),
+                            labelText: "Digite o CEP para pesquisa",
                             border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(8))),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8)),
+                            ),
                             contentPadding: EdgeInsets.all(10),
                           ),
                         ),
                       ),
                     ),
-                  ),
+                  )
                 ],
               ),
               const SizedBox(height: 40),
-              GestureDetector(
-                onTap: () {
+              FloatingActionButton(
+                onPressed: () {
                   context.read<CepCubit>().obtenhaCep(nameController.text);
                 },
-                child: const CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Center(
-                    child: Icon(
-                      Icons.search,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
+                elevation: 8.0,
+                backgroundColor: Colors.blue[600],
+                foregroundColor: Colors.black,
+                shape: const CircleBorder(),
+                child: const Icon(Icons.search),
               ),
               const SizedBox(height: 40),
               BlocBuilder<CepCubit, CepState>(
@@ -199,6 +201,10 @@ class ConsultaCep extends StatelessWidget {
                         ),
                       ],
                     ));
+                  } else if (state is CepError) {
+                    return Center(
+                      child: Text(state.message),
+                    );
                   } else {
                     return const Center(
                       child: Text("Digite um cep para pesquisar!"),
