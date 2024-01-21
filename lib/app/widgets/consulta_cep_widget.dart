@@ -15,7 +15,7 @@ class ConsultaCep extends StatelessWidget {
     return Center(
       child: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.only(top: 100, left: 50, right: 50),
+          padding: const EdgeInsets.only(top: 100, left: 30, right: 30),
           child: Column(
             children: [
               Row(
@@ -30,13 +30,14 @@ class ConsultaCep extends StatelessWidget {
                             BoxShadow(
                                 color: Colors.black.withOpacity(.2),
                                 offset: const Offset(5, 8),
-                                blurRadius: 4)
+                                blurRadius: 10)
                           ]),
                       child: SizedBox(
                         width: 600,
                         child: TextFormField(
                           controller: nameController,
                           inputFormatters: [maskFormatter],
+                          keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
                             labelText: "Digite o CEP para pesquisa",
                             border: OutlineInputBorder(
@@ -54,15 +55,18 @@ class ConsultaCep extends StatelessWidget {
               const SizedBox(height: 40),
               FloatingActionButton(
                 onPressed: () {
-                  context.read<CepCubit>().obtenhaCep(nameController.text);
+                  FocusManager.instance.primaryFocus?.unfocus();
+                  context
+                      .read<CepCubit>()
+                      .obtenhaCep(nameController.text, context);
                 },
-                elevation: 8.0,
+                elevation: 10.0,
                 backgroundColor: Colors.blue[600],
                 foregroundColor: Colors.black,
                 shape: const CircleBorder(),
                 child: const Icon(Icons.search),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 60),
               BlocBuilder<CepCubit, CepState>(
                 builder: (context, state) {
                   if (state is CepLoading) {
@@ -71,143 +75,164 @@ class ConsultaCep extends StatelessWidget {
                     );
                   } else if (state is CepLoaded) {
                     return Center(
-                        child: Column(
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            style: DefaultTextStyle.of(context).style,
-                            children: <TextSpan>[
-                              const TextSpan(
-                                text: 'Estado: ',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
+                        child: Container(
+                      width: 600,
+                      padding: const EdgeInsets.all(7),
+                      decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 242, 245, 255),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(3)),
+                          boxShadow: [
+                            BoxShadow(
+                                color: const Color.fromARGB(255, 186, 205, 255)
+                                    .withOpacity(.9),
+                                offset: const Offset(0, 0),
+                                blurRadius: 30)
+                          ]),
+                      child: Column(
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                              style: DefaultTextStyle.of(context).style,
+                              children: <TextSpan>[
+                                const TextSpan(
+                                  text: 'Estado: ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
                                 ),
-                              ),
-                              TextSpan(
-                                text: state.cep.uf,
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                            ],
-                          ),
-                        ),
-                        RichText(
-                          text: TextSpan(
-                            style: DefaultTextStyle.of(context).style,
-                            children: <TextSpan>[
-                              const TextSpan(
-                                text: 'Cidade: ',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
+                                TextSpan(
+                                  text: state.cep.uf,
+                                  style: const TextStyle(fontSize: 18),
                                 ),
-                              ),
-                              TextSpan(
-                                text: state.cep.localidade,
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        RichText(
-                          text: TextSpan(
-                            style: DefaultTextStyle.of(context).style,
-                            children: <TextSpan>[
-                              const TextSpan(
-                                text: 'Setor/Bairro: ',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
+                          RichText(
+                            text: TextSpan(
+                              style: DefaultTextStyle.of(context).style,
+                              children: <TextSpan>[
+                                const TextSpan(
+                                  text: 'Cidade: ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
                                 ),
-                              ),
-                              TextSpan(
-                                text: state.cep.bairro,
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                            ],
-                          ),
-                        ),
-                        RichText(
-                          text: TextSpan(
-                            style: DefaultTextStyle.of(context).style,
-                            children: <TextSpan>[
-                              const TextSpan(
-                                text: 'Logradouro: ',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
+                                TextSpan(
+                                  text: state.cep.localidade,
+                                  style: const TextStyle(fontSize: 18),
                                 ),
-                              ),
-                              TextSpan(
-                                text: state.cep.logradouro,
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        RichText(
-                          text: TextSpan(
-                            style: DefaultTextStyle.of(context).style,
-                            children: <TextSpan>[
-                              const TextSpan(
-                                text: 'Código IBGE: ',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
+                          RichText(
+                            text: TextSpan(
+                              style: DefaultTextStyle.of(context).style,
+                              children: <TextSpan>[
+                                const TextSpan(
+                                  text: 'Setor/Bairro: ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
                                 ),
-                              ),
-                              TextSpan(
-                                text: state.cep.ibge,
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                            ],
-                          ),
-                        ),
-                        RichText(
-                          text: TextSpan(
-                            style: DefaultTextStyle.of(context).style,
-                            children: <TextSpan>[
-                              const TextSpan(
-                                text: 'DDD: ',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
+                                TextSpan(
+                                  text: state.cep.bairro,
+                                  style: const TextStyle(fontSize: 18),
                                 ),
-                              ),
-                              TextSpan(
-                                text: state.cep.ddd,
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        RichText(
-                          text: TextSpan(
-                            style: DefaultTextStyle.of(context).style,
-                            children: <TextSpan>[
-                              const TextSpan(
-                                text: 'CEP: ',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
+                          RichText(
+                            text: TextSpan(
+                              style: DefaultTextStyle.of(context).style,
+                              children: <TextSpan>[
+                                const TextSpan(
+                                  text: 'Logradouro: ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
                                 ),
-                              ),
-                              TextSpan(
-                                text: state.cep.cep,
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                            ],
+                                TextSpan(
+                                  text: state.cep.logradouro,
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                          RichText(
+                            text: TextSpan(
+                              style: DefaultTextStyle.of(context).style,
+                              children: <TextSpan>[
+                                const TextSpan(
+                                  text: 'Código IBGE: ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: state.cep.ibge,
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
+                          RichText(
+                            text: TextSpan(
+                              style: DefaultTextStyle.of(context).style,
+                              children: <TextSpan>[
+                                const TextSpan(
+                                  text: 'DDD: ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: state.cep.ddd,
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
+                          RichText(
+                            text: TextSpan(
+                              style: DefaultTextStyle.of(context).style,
+                              children: <TextSpan>[
+                                const TextSpan(
+                                  text: 'CEP: ',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: state.cep.cep,
+                                  style: const TextStyle(fontSize: 18),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ));
                   } else if (state is CepError) {
-                    return Center(
-                      child: Text(state.message),
+                    return const Center(
+                      child: Text(
+                        "Digite um cep para pesquisar!",
+                        style: TextStyle(fontSize: 20),
+                      ),
                     );
                   } else {
                     return const Center(
-                      child: Text("Digite um cep para pesquisar!"),
+                      child: Text(
+                        "Digite um cep para pesquisar!",
+                        style: TextStyle(fontSize: 20),
+                      ),
                     );
                   }
                 },

@@ -24,9 +24,9 @@ class Cep {
 
   Cep.fromJson(Map<String, dynamic> json) {
     cep = json['cep'];
-    logradouro = json['logradouro'];
+    logradouro = json['logradouro'].isEmpty ? 'CEP Geral' : json['logradouro'];
     complemento = json['complemento'];
-    bairro = json['bairro'];
+    bairro = json['bairro'].isEmpty ? 'CEP Geral' : json['bairro'];
     localidade = json['localidade'];
     uf = json['uf'];
     ibge = json['ibge'];
